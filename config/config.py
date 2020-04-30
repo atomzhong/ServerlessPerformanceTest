@@ -48,8 +48,8 @@ QC_API_ID = "**************"
 QC_API_KEY = "*************"
 
 # 腾讯云 vpc信息，需要和地域信息对应
-QC_VPC = "vpc-9iacw56a"
-QC_SUBNET = "subnet-1q6stt6t"
+QC_VPC = "vpc-*******"
+QC_SUBNET = "subnet-*******"
 
 # 腾讯云请求api地址模板
 # e.g. QC_ENDPOINT_MODEL % REGION
@@ -70,8 +70,8 @@ ALI_ACCESSKEY_ID = "**************"
 ALI_ACCESSKEY_KEY = "****************"
 
 # 阿里云Service信息
-ALI_VPC_SERVICE = "scf-vpc"
-ALI_NORMAL_SERVICE = "scf-basic"
+ALI_VPC_SERVICE = "*****"
+ALI_NORMAL_SERVICE = "*****"
 
 # ======================================================
 AWS_NAME = "aws"
