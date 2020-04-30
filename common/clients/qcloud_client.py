@@ -55,11 +55,11 @@ class QcloudClient:
 
         if isVpc:
             self.logger.info("create vpc [%s] function\n" % invokeType)
-            params = '''{"FunctionName":"%s","Code":{"ZipFile": %s},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","VpcConfig":{"VpcId":"%s","SubnetId":"%s"}}''' % (
+            params = '''{"FunctionName":"%s","Code":{"ZipFile": %s},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","VpcConfig":{"VpcId":"%s","SubnetId":"%s"},"Namespace":"dialtest"}''' % (
             functionname, zip64, INVOKE_HANDLER,self.vpcId, self.subnetId)
         else:
             self.logger.info("create [%s] function\n" % invokeType)
-            params = '''{"FunctionName":"%s","Code":{"ZipFile":"%s"},"Timeout":60,"Handler":"%s","Runtime":"Python2.7"}''' % (functionname, zip64, INVOKE_HANDLER)
+            params = '''{"FunctionName":"%s","Code":{"ZipFile":"%s"},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","Namespace":"dialtest"}''' % (functionname, zip64, INVOKE_HANDLER)
 
         crea = models.CreateFunctionRequest()
         crea.from_json_string(params)
