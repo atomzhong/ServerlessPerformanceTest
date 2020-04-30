@@ -6,7 +6,7 @@ from tencentcloud.scf.v20180416 import scf_client, models
 from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.profile.http_profile import HttpProfile
 
-from config.config import REGION, QC_API_ID, QC_API_KEY, QC_VPC, QC_SUBNET, QC_ENDPOINT_MODEL, BASCI_LOGGING_CODE, INVOKE_HANDLER, QC_NAME
+from config.config import REGION, QC_API_ID, QC_API_KEY, QC_VPC, QC_SUBNET, QC_ENDPOINT_MODEL, BASCI_LOGGING_CODE, INVOKE_HANDLER, QC_NAME, QC_NAMESPACE
 from common.utils import getLogger, getCodeBase64
 
 class QcloudClient:
@@ -55,11 +55,11 @@ class QcloudClient:
 
         if isVpc:
             self.logger.info("create vpc [%s] function\n" % invokeType)
-            params = '''{"FunctionName":"%s","Code":{"ZipFile": %s},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","VpcConfig":{"VpcId":"%s","SubnetId":"%s"},"Namespace":"dialtest"}''' % (
-            functionname, zip64, INVOKE_HANDLER,self.vpcId, self.subnetId)
+            params = '''{"FunctionName":"%s","Code":{"ZipFile": %s},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","VpcConfig":{"VpcId":"%s","SubnetId":"%s"},"Namespace":"%s"}''' % (
+            functionname, zip64, INVOKE_HANDLER,self.vpcId, self.subnetId, QC_NAMESPACE)
         else:
             self.logger.info("create [%s] function\n" % invokeType)
-            params = '''{"FunctionName":"%s","Code":{"ZipFile":"%s"},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","Namespace":"dialtest"}''' % (functionname, zip64, INVOKE_HANDLER)
+            params = '''{"FunctionName":"%s","Code":{"ZipFile":"%s"},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","Namespace":"%s"}''' % (functionname, zip64, INVOKE_HANDLER, QC_NAMESPACE)
 
         crea = models.CreateFunctionRequest()
         crea.from_json_string(params)
@@ -68,7 +68,7 @@ class QcloudClient:
 
         start_time = time.time()
         while time.time() - start_time < 3000:
-            params = '''{"FunctionName":"%s"}''' % functionname
+            params = '''{"FunctionName":"%s","Namespace":"%s"}''' % (functionname,QC_NAMESPACE)
             getf = models.GetFunctionRequest()
             getf.from_json_string(params)
             resp = self.client.GetFunction(getf)
@@ -90,14 +90,14 @@ class QcloudClient:
 
 
     def deleteFunction(self, functionname):
-        params = '''{"FunctionName": "%s"}''' % functionname
+        params = '''{"FunctionName": "%s","Namespace":"%s"}''' % (functionname,QC_NAMESPACE)
         dele = models.DeleteFunctionRequest()
         dele.from_json_string(params)
         resp = self.client.DeleteFunction(dele)
         return resp
 
     def invokeFunctionGetDuration(self, functionname):
-        params = '''{"FunctionName": "%s"}''' % functionname
+        params = '''{"FunctionName": "%s","Namespace":"%s"}''' % (functionname,QC_NAMESPACE)
         invo = models.InvokeRequest()
         invo.from_json_string(params)
         resp = self.client.Invoke(invo)
