@@ -8,6 +8,7 @@ pip install aliyun-fc2
 export PYTHONPATH=/your_dir
 
 cd ServerlessPerFormanceTest
+
 mkdir code_zip # 用于保存创建函数时生成的代码zip包
 
 mkdir log # 执行日志存放目录
