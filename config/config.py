@@ -69,7 +69,8 @@ QC_SUBNET = "subnet-*******"
 # e.g. QC_ENDPOINT_MODEL % REGION
 QC_ENDPOINT_MODEL = "scf.ap-%s.tencentcloudapi.com"
 
-QC_NAMESPACE = "dialtest"
+# 腾讯云函数命名空间，默认default
+QC_NAMESPACE = "default"
 
 # ======================================================
 ALI_NAME = "aliyun"
