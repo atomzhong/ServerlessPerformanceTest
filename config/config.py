@@ -5,7 +5,8 @@ import os,logging
 FUNCTION_NAME = "ServerLessTest"
 
 # 结果数据存放目录
-RESULT_DATA_PATH = os.path.join((os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(__file__))))) + os.path.sep + "result" + os.path.sep), "data_%s.py")
+RESULT_DATA_PATH = os.path.join((os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(__file__))))) + os.path.sep + "result" + os.path.sep), "data.py")
+RESULT_PNG_PATH = os.path.join((os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(__file__))))) + os.path.sep + "result" + os.path.sep), "%s_%s.png")
 
 
 # 日志目录
@@ -39,6 +40,19 @@ COMPUTE_CODE = "COMPUTE_CODE"
 INDEX_FLIE = "index.py"
 INVOKE_HANDLER = "index.handler"
 
+# 调用次数设定
+# 调用总次数
+# 如果为热调用，则调用总次数为100+50=150次，但仅记录后100次调用数据
+NUMBER_OF_INVOKES = 100
+# 热调用预热调用次数
+NUMBER_HOT_WARM_UP_INVOKES = 50
+
+# 调用类型
+HOT_INVOKE = "HOT_INVOKE"
+COLD_INVOKE = "COLD_INVOKE"
+VPC_COLD_INVOKE = "VPC_COLD_INVOKE"
+SCENES_INVOKE = "SCENES_INVOKE"
+
 # ======================================================
 
 # 腾讯云账号api id
@@ -54,6 +68,8 @@ QC_SUBNET = "subnet-*******"
 # 腾讯云请求api地址模板
 # e.g. QC_ENDPOINT_MODEL % REGION
 QC_ENDPOINT_MODEL = "scf.ap-%s.tencentcloudapi.com"
+
+QC_NAMESPACE = "dialtest"
 
 # ======================================================
 ALI_NAME = "aliyun"

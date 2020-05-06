@@ -1,0 +1,4 @@
+/log/*.log
+/config/config.py
+/code_zip/*.zip
+/code_zip/*.py
