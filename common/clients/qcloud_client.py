@@ -40,10 +40,8 @@ class QcloudClient:
         self.logger.info("VPC id is: %s"% QC_VPC)
         self.logger.info("VPC-Subnet id is: %s\n" % QC_SUBNET)
 
-    def invokeFunction(self, functionname, namespace=None):
-        params = '''{"FunctionName": "%s"}''' % functionname
-        if namespace:
-            params = '''{"Namespace":"%s","FunctionName":"%s"}''' % (namespace, functionname)
+    def invokeFunction(self, functionname):
+        params = '''{"Namespace":"%s","FunctionName":"%s"}''' % (QC_NAMESPACE, functionname)
         invo = models.InvokeRequest()
         invo.from_json_string(params)
         resp = self.client.Invoke(invo)
@@ -55,8 +53,8 @@ class QcloudClient:
 
         if isVpc:
             self.logger.info("create vpc [%s] function\n" % invokeType)
-            params = '''{"FunctionName":"%s","Code":{"ZipFile": %s},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","VpcConfig":{"VpcId":"%s","SubnetId":"%s"},"Namespace":"%s"}''' % (
-            functionname, zip64, INVOKE_HANDLER,self.vpcId, self.subnetId, QC_NAMESPACE)
+            params = '''{"FunctionName":"%s","Code":{"ZipFile":"%s"},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","VpcConfig":{"VpcId":"%s","SubnetId":"%s"},"Namespace":"%s"}''' % (
+            functionname, zip64, INVOKE_HANDLER,QC_VPC,QC_SUBNET, QC_NAMESPACE)
         else:
             self.logger.info("create [%s] function\n" % invokeType)
             params = '''{"FunctionName":"%s","Code":{"ZipFile":"%s"},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","Namespace":"%s"}''' % (functionname, zip64, INVOKE_HANDLER, QC_NAMESPACE)

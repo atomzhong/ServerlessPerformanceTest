@@ -102,4 +102,6 @@ AWS_ACCESSKEY_KEY = "*****************"
 # 亚马逊云产品角色
 AWS_LAMBDA_ROLE = "*****************"
 
+AWS_VPC_CONF = {'SubnetIds': ["subnet-*****","subnet-*****"],'SecurityGroupIds':["sg-*****"]}
+
 

@@ -4,7 +4,7 @@ from common.utils import getLogger, getResAndTimeInterval
 from common.clients.qcloud_client import QcloudClient
 from common.clients.aliyun_client import AliClient
 from common.clients.aws_client import AwsClient
-from config.config import BASCI_LOGGING_CODE, FUNCTION_NAME, QC_NAME
+from config.config import BASCI_LOGGING_CODE, FUNCTION_NAME, QC_NAME, AWS_NAME
 
 class Invoker:
     def __init__(self, invokeClient, count):
@@ -26,6 +26,7 @@ class Invoker:
         self.logger.info('start hot invoke')
         for i in xrange((self.count + warmUpCount)):
             res, interval = getResAndTimeInterval(self.invokeClient.invokeFunction, functionName)
+            self.logger.info("当前调用次数：[%s]" % i)
             self.logger.info("invoke time is: %s" % interval)
             self.logger.info("invoke res is: %s" % res)
             if i >= warmUpCount:
@@ -65,13 +66,14 @@ class Invoker:
             time.sleep(5)
 
             res, interval = getResAndTimeInterval(self.invokeClient.invokeFunction, functionName)
+            self.logger.info("当前调用次数：[%s]" % i)
             self.logger.info("invoke time is: %s" % interval)
             self.logger.info("invoke res is: %s" % res)
             data.append(interval)
             timeSum += interval
 
-            if isVpc and self.invokeClient.name == QC_NAME and i == 0:
-                self.logger.info("Do not delete the first qcloud vpc function.")
+            if isVpc and self.invokeClient.name in [QC_NAME,AWS_NAME] and i == 0:
+                self.logger.info("Do not delete the first qcloud/aws vpc function.")
                 first_functionName = functionName
                 time.sleep(30)
                 continue
@@ -83,7 +85,7 @@ class Invoker:
             time.sleep(1)
 
         if isVpc and self.invokeClient.name == QC_NAME:
-            self.logger.info('start delete qcloud first vpc function')
+            self.logger.info('start delete qcloud/aws first vpc function')
             response = self.invokeClient.deleteFunction(first_functionName)
             self.logger.info("delete res is: %s" % response)
 
@@ -115,6 +117,7 @@ class Invoker:
         self.logger.info('start scenes invoke')
         for i in xrange(self.count):
             res, duration, memUsed = self.invokeClient.invokeFunctionGetDuration(functionName)
+            self.logger.info("当前调用次数：[%s]" % i)
             self.logger.info("duration time is: %s" % duration)
             self.logger.info("memory used is: %s" % memUsed)
 

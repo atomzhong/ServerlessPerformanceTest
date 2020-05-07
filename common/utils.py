@@ -121,7 +121,7 @@ def getResAndTimeInterval(func, *args, **kwargs):
 
 # 将测试数据写入文件
 def setResultDataToFile(file, func, *args, **kwargs):
-    if func.__name__ == "durationInvoke":
+    if func.__name__ == "scenesInvoke":
         data, data_average, mem_data, mem_data_average = func(*args, **kwargs)
         file.write(data)
         file.write('\n\n')
@@ -144,6 +144,7 @@ def setResultDataToFile(file, func, *args, **kwargs):
 def getResultJPG(title, ali_data,aws_data,qcc_data, ali_data_ave,aws_data_ave,qcc_data_ave, filename):
 
     x = range(1, 101)
+    plt.figure(figsize=(15,4))
 
     plt.plot(x, ali_data, color="r", linestyle="-", linewidth=1, label="aliyun,average=%s" % ali_data_ave)
     plt.plot(x, aws_data, color="g", linestyle="-", linewidth=1, label="aws,average=%s" % aws_data_ave)
@@ -155,6 +156,7 @@ def getResultJPG(title, ali_data,aws_data,qcc_data, ali_data_ave,aws_data_ave,qc
     plt.title(title)
     plt.grid(color="k", linestyle=":", axis="y")
     plt.savefig(filename, dpi=100)
+    plt.clf()
 
 # 绘制两张折线子图拼接
 def getDoubleResultJPG(title,
@@ -162,8 +164,7 @@ def getDoubleResultJPG(title,
                        ali_data2, aws_data2, qcc_data2, ali_data_ave2, aws_data_ave2, qcc_data_ave2,
                        filename):
     x = range(1, 101)
-
-    plt.figure(1)
+    plt.figure(figsize=(15, 4))
     plt.subplot(1, 2, 1)
     plt.plot(x, ali_data, color="r", linestyle="-", linewidth=1, label="aliyun,average=%s" % ali_data_ave)
     plt.plot(x, aws_data, color="g", linestyle="-", linewidth=1, label="aws,average=%s" % aws_data_ave)
@@ -175,7 +176,6 @@ def getDoubleResultJPG(title,
     plt.title(title)
     plt.grid(color="k", linestyle=":", axis="y")
 
-    plt.figure(1)
     plt.subplot(1, 2, 2)
     plt.plot(x, ali_data2, color="r", linestyle="-", linewidth=1, label="aliyun,average=%s" % ali_data_ave2)
     plt.plot(x, aws_data2, color="g", linestyle="-", linewidth=1, label="aws,average=%s" % aws_data_ave2)
@@ -184,23 +184,29 @@ def getDoubleResultJPG(title,
     plt.legend(loc='upper left', bbox_to_anchor=(0.2, 0.95))
     plt.xlabel("number_of_invokes")
     plt.ylabel("memory_used(mb)")
-    plt.title(title)
+
     plt.grid(color="k", linestyle=":", axis="y")
+    plt.subplots_adjust(wspace=0.3)
 
     plt.savefig(filename, dpi=100)
-
+    plt.clf()
 
 
 if __name__ == '__main__':
     from result.data import *
 
+    _time = str(int(time.time()))
     pngname = (RESULT_PNG_PATH % (HOT_INVOKE, _time))
-    getResultJPG(SCENES_INVOKE, aliyun_hot, aws_hot, qcloud_hot, aliyun_hot_average, aws_hot_average,
+    getResultJPG(HOT_INVOKE, aliyun_hot, aws_hot, qcloud_hot, aliyun_hot_average, aws_hot_average,
                  qcloud_hot_average, pngname)
 
     pngname = (RESULT_PNG_PATH % (COLD_INVOKE, _time))
-    getResultJPG(SCENES_INVOKE, aliyun_cold, aws_cold, qcloud_cold, aliyun_cold_average, aws_cold_average,
+    getResultJPG(COLD_INVOKE, aliyun_cold, aws_cold, qcloud_cold, aliyun_cold_average, aws_cold_average,
                  qcloud_cold_average, pngname)
+
+    pngname = (RESULT_PNG_PATH % (VPC_COLD_INVOKE, _time))
+    getResultJPG(VPC_COLD_INVOKE, aliyun_vpc_cold, aws_vpc_cold, qcloud_vpc_cold, aliyun_vpc_cold_average, aws_vpc_cold_average,
+                 qcloud_vpc_cold_average, pngname)
 
     pngname = (RESULT_PNG_PATH % ((SCENES_INVOKE + BASCI_LOGGING_CODE), _time))
     getDoubleResultJPG((SCENES_INVOKE + BASCI_LOGGING_CODE),
@@ -224,6 +230,7 @@ if __name__ == '__main__':
                        aws_BASIC_PRINT_CODE_memused_average, qcloud_BASIC_PRINT_CODE_memused_average,
                        pngname)
 
+    pngname = (RESULT_PNG_PATH % ((SCENES_INVOKE + NET_CODE), _time))
     getDoubleResultJPG((SCENES_INVOKE + NET_CODE),
                        aliyun_NET_CODE_duration, aws_NET_CODE_duration,
                        qcloud_NET_CODE_duration, aliyun_NET_CODE_duration_average,
@@ -234,6 +241,7 @@ if __name__ == '__main__':
                        aws_NET_CODE_memused_average, qcloud_NET_CODE_memused_average,
                        pngname)
 
+    pngname = (RESULT_PNG_PATH % ((SCENES_INVOKE + FILE_IO_CODE), _time))
     getDoubleResultJPG((SCENES_INVOKE + FILE_IO_CODE),
                        aliyun_FILE_IO_CODE_duration, aws_FILE_IO_CODE_duration,
                        qcloud_FILE_IO_CODE_duration, aliyun_FILE_IO_CODE_duration_average,
@@ -244,6 +252,7 @@ if __name__ == '__main__':
                        aws_FILE_IO_CODE_memused_average, qcloud_FILE_IO_CODE_memused_average,
                        pngname)
 
+    pngname = (RESULT_PNG_PATH % ((SCENES_INVOKE + FILE_RANDOM_IO_CODE), _time))
     getDoubleResultJPG((SCENES_INVOKE + FILE_RANDOM_IO_CODE),
                        aliyun_FILE_RANDOM_IO_CODE_duration, aws_FILE_RANDOM_IO_CODE_duration,
                        qcloud_FILE_RANDOM_IO_CODE_duration, aliyun_FILE_RANDOM_IO_CODE_duration_average,
@@ -254,6 +263,7 @@ if __name__ == '__main__':
                        aws_FILE_RANDOM_IO_CODE_memused_average, qcloud_FILE_RANDOM_IO_CODE_memused_average,
                        pngname)
 
+    pngname = (RESULT_PNG_PATH % ((SCENES_INVOKE + COMPUTE_CODE), _time))
     getDoubleResultJPG((SCENES_INVOKE + COMPUTE_CODE),
                        aliyun_COMPUTE_CODE_duration, aws_COMPUTE_CODE_duration,
                        qcloud_COMPUTE_CODE_duration, aliyun_COMPUTE_CODE_duration_average,

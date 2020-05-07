@@ -2,7 +2,7 @@
 import time, datetime, json, sys, os, zipfile, base64
 import boto3
 
-from config.config import AWS_REGION, AWS_PRODUCT_NAME, AWS_ACCESSKEY_ID, AWS_ACCESSKEY_KEY, AWS_LAMBDA_ROLE, BASCI_LOGGING_CODE, INVOKE_HANDLER,AWS_NAME
+from config.config import AWS_REGION, AWS_PRODUCT_NAME, AWS_ACCESSKEY_ID, AWS_ACCESSKEY_KEY, AWS_LAMBDA_ROLE, BASCI_LOGGING_CODE, INVOKE_HANDLER,AWS_NAME, AWS_VPC_CONF
 
 from config.code import CODE
 
@@ -39,6 +39,23 @@ class AwsClient:
         else:
             self.logger.info("create [%s] function\n" % invokeType)
             response = self.client.create_function(FunctionName=functionname, Runtime='python2.7', Role=AWS_LAMBDA_ROLE, MemorySize=256, Handler="index.handler", Timeout=10, TracingConfig={"Mode": "PassThrough"}, Code={"ZipFile": code_zip_buf})
+
+        start_time = time.time()
+        while time.time() - start_time < 3000:
+            resp = self.client.get_function(FunctionName=functionname)
+
+            if resp['Configuration']['State'] == "Active":
+                self.logger.info("恭喜!函数处于可用状态[%s]\n" % str(resp['Configuration']['State']))
+                return resp
+            elif "ing" in resp['Configuration']['State']:
+                self.logger.info("函数处于不可用状态[%s]，再次查询状态...\n" % str(resp['Configuration']['State']))
+                time.sleep(2)
+            elif "Failed" in resp['Configuration']['State']:
+                self.logger.info("函数操作失败[%s]\n" % str(resp['Configuration']['State']))
+                raise RuntimeError('Create Function Error!')
+            else:
+                self.logger.info("函数处于未知状态[%s]\n" % str(resp['Configuration']['State']))
+                raise RuntimeError('Create Function Error!')
 
         return response
 

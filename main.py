@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import time
+import time,os
 from common.invoke_model import Invoker
 from common.utils import getLogger, setResultDataToFile
-from config.config import RESULT_DATA_PATH, NUMBER_OF_INVOKES, NUMBER_HOT_WARM_UP_INVOKES
+from config.config import RESULT_DATA_PATH, NUMBER_OF_INVOKES, NUMBER_HOT_WARM_UP_INVOKES, BASCI_LOGGING_CODE, BASIC_PRINT_CODE, NET_CODE, FILE_IO_CODE, FILE_RANDOM_IO_CODE, COMPUTE_CODE
 
 from common.clients.qcloud_client import QcloudClient
 from common.clients.aliyun_client import AliClient
@@ -36,6 +36,13 @@ if __name__ == '__main__':
         setResultDataToFile(dataFile, invoker.coldInvoke, isVpc=True)
 
         # 场景执行测试，区分为计算型、IO内存型、网络型、基础型
-        for it in [BASCI_LOGGING_CODE, BASIC_PRINT_CODE, NET_CODE, FILE_IO_CODE, FILE_RANDOM_IO_CODE, COMPUTE_CODE]:
+        for it in [
+            BASCI_LOGGING_CODE,
+            BASIC_PRINT_CODE,
+            NET_CODE,
+            FILE_IO_CODE,
+            FILE_RANDOM_IO_CODE,
+            COMPUTE_CODE
+        ]:
             setResultDataToFile(dataFile, invoker.scenesInvoke, scenesType=it)
 
