@@ -15,13 +15,13 @@ class Invoker:
         self.logger = getLogger()
 
     # 热调用，仅创建一次函数，间隔1s连续调用150次，前50次调用为预热阶段，取后100次调用数据
-    def hotInvoke(self, warmUpCount=None, isVpc=None):
+    def hotInvoke(self, warmUpCount=None, isVpc=None, scenesType=None):
         data = []
         timeSum = 0
 
         self.logger.info('start create function')
         functionName = FUNCTION_NAME + str(int(time.time()))
-        self.logger.info('create resp:%s' % self.invokeClient.createFunction(functionName, BASCI_LOGGING_CODE, isVpc=isVpc))
+        self.logger.info('create resp:%s' % self.invokeClient.createFunction(functionName, scenesType, isVpc=isVpc))
 
         self.logger.info('start hot invoke')
         for i in xrange((self.count + warmUpCount)):
@@ -51,7 +51,7 @@ class Invoker:
         return data, data_average
 
     # 冷调用，每次调用都会重新创建函数，间隔1s连续调用100次，无预热阶段
-    def coldInvoke(self, isVpc=None):
+    def coldInvoke(self, isVpc=None, scenesType=None):
         data = []
         timeSum = 0
         first_functionName = ""
@@ -60,7 +60,7 @@ class Invoker:
         for i in xrange(self.count):
             self.logger.info('start create function')
             functionName = FUNCTION_NAME + str(int(time.time()))
-            self.logger.info('create resp:%s' % self.invokeClient.createFunction(functionName, BASCI_LOGGING_CODE, isVpc=isVpc))
+            self.logger.info('create resp:%s' % self.invokeClient.createFunction(functionName, scenesType, isVpc=isVpc))
 
             # 模拟用户行为，创建完后不会立刻调用
             time.sleep(5)

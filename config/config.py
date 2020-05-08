@@ -35,6 +35,10 @@ FILE_IO_CODE = "FILE_IO_CODE"
 FILE_RANDOM_IO_CODE = "FILE_RANDOM_IO_CODE"
 # 浮点数计算场景
 COMPUTE_CODE = "COMPUTE_CODE"
+# 大文件场景
+LARGE_FILE_CODE = "LARGE_FILE_CODE"
+# 批量小文件场景
+MUTI_LITTLE_FILE_CODE = "MUTI_LITTLE_FILE_CODE"
 
 # 函数handler
 INDEX_FLIE = "index.py"
@@ -72,6 +76,8 @@ QC_ENDPOINT_MODEL = "scf.ap-%s.tencentcloudapi.com"
 # 腾讯云函数命名空间，默认default
 QC_NAMESPACE = "default"
 
+QC_COS_BUCKET = "********"
+
 # ======================================================
 ALI_NAME = "aliyun"
 # 阿里云用户id
@@ -90,6 +96,8 @@ ALI_ACCESSKEY_KEY = "****************"
 ALI_VPC_SERVICE = "*****"
 ALI_NORMAL_SERVICE = "*****"
 
+ALI_OSS_BUCKET = ""
+
 # ======================================================
 AWS_NAME = "aws"
 # 亚马逊云产品名
@@ -103,5 +111,7 @@ AWS_ACCESSKEY_KEY = "*****************"
 AWS_LAMBDA_ROLE = "*****************"
 
 AWS_VPC_CONF = {'SubnetIds': ["subnet-*****","subnet-*****"],'SecurityGroupIds':["sg-*****"]}
+
+AWS_S3_BUCKET = "*********"
 
 

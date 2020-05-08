@@ -2,7 +2,7 @@
 import time, datetime, json, sys, os, zipfile, base64
 import boto3
 
-from config.config import AWS_REGION, AWS_PRODUCT_NAME, AWS_ACCESSKEY_ID, AWS_ACCESSKEY_KEY, AWS_LAMBDA_ROLE, BASCI_LOGGING_CODE, INVOKE_HANDLER,AWS_NAME, AWS_VPC_CONF
+from config.config import AWS_REGION, AWS_PRODUCT_NAME, AWS_ACCESSKEY_ID, AWS_ACCESSKEY_KEY, AWS_LAMBDA_ROLE, BASCI_LOGGING_CODE, INVOKE_HANDLER,AWS_NAME, AWS_VPC_CONF,LARGE_FILE_CODE,AWS_S3_BUCKET,MUTI_LITTLE_FILE_CODE
 
 from config.code import CODE
 
@@ -31,14 +31,26 @@ class AwsClient:
         return ret
 
     def createFunction(self, functionname, invokeType, isVpc=False):
-        code_zip_buf = getCodeBuf(invokeType)
+        if invokeType == LARGE_FILE_CODE:
+            code = {"S3Bucket": AWS_S3_BUCKET, "S3Key": invokeType+".zip"}
+            handler = "index.main"
+            runtime = 'go1.x'
+        elif invokeType == MUTI_LITTLE_FILE_CODE:
+            code = {"S3Bucket": AWS_S3_BUCKET, "S3Key": invokeType+".zip"}
+            handler = "index.main_handler"
+            runtime = 'nodejs8.10'
+        else:
+            code_zip_buf = getCodeBuf(invokeType)
+            code = {"ZipFile": code_zip_buf}
+            handler = INVOKE_HANDLER
+            runtime = 'python2.7'
 
         if isVpc:
             self.logger.info("create vpc [%s] function\n" % invokeType)
-            response = self.client.create_function(FunctionName=functionname, Runtime='python2.7', Role=AWS_LAMBDA_ROLE, MemorySize=256, Handler="index.handler", Timeout=10, TracingConfig={"Mode": "PassThrough"}, Code={"ZipFile": code_zip_buf}, VpcConfig=aws_vpc_config)
+            response = self.client.create_function(FunctionName=functionname, Runtime=runtime, Role=AWS_LAMBDA_ROLE, MemorySize=512, Handler=handler, Timeout=60, TracingConfig={"Mode": "PassThrough"}, Code=code, VpcConfig=aws_vpc_config)
         else:
             self.logger.info("create [%s] function\n" % invokeType)
-            response = self.client.create_function(FunctionName=functionname, Runtime='python2.7', Role=AWS_LAMBDA_ROLE, MemorySize=256, Handler="index.handler", Timeout=10, TracingConfig={"Mode": "PassThrough"}, Code={"ZipFile": code_zip_buf})
+            response = self.client.create_function(FunctionName=functionname, Runtime=runtime, Role=AWS_LAMBDA_ROLE, MemorySize=512, Handler=handler, Timeout=60, TracingConfig={"Mode": "PassThrough"}, Code=code)
 
         start_time = time.time()
         while time.time() - start_time < 3000:

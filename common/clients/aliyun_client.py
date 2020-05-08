@@ -2,7 +2,7 @@
 import time, datetime, json, sys, os, zipfile, base64
 import fc2
 
-from config.config import REGION, ALI_USER_ID, ALI_ACCESSKEY_ID, ALI_ACCESSKEY_KEY, ALI_NORMAL_SERVICE, ALI_VPC_SERVICE, ALI_ENDPOINT_MODEL, BASCI_LOGGING_CODE, INVOKE_HANDLER,ALI_NAME
+from config.config import REGION, ALI_USER_ID, ALI_ACCESSKEY_ID, ALI_ACCESSKEY_KEY, ALI_NORMAL_SERVICE, ALI_VPC_SERVICE, ALI_ENDPOINT_MODEL, BASCI_LOGGING_CODE, INVOKE_HANDLER,ALI_NAME,RESULT_DATA_PATH
 
 from config.code import CODE
 
@@ -41,15 +41,35 @@ class AliClient:
         return ret
 
     def createFunction(self, functionname, invokeType, isVpc=False):
+        if invokeType == LARGE_FILE_CODE:
+            codeossbucket = ALI_OSS_BUCKET
+            codeossobject = invokeType + ".zip"
+            zipname = None
+            handler = "index.main"
+            runtime = 'go1.x'
+        elif invokeType == MUTI_LITTLE_FILE_CODE:
+            codeossbucket = ALI_OSS_BUCKET
+            codeossobject = invokeType+".zip"
+            zipname = None
+            handler = "index.main_handler"
+            runtime = 'nodejs8'
+        else:
+            codeossbucket = None
+            codeossobject = None
+            handler = INVOKE_HANDLER
+            zipname = getCodeZip(invokeType)
+            runtime = 'python2'
 
-        zipname = getCodeZip(invokeType)
+
         if isVpc:
             self.logger.info("create vpc [%s] function\n" % invokeType)
-            ret = self.client.create_function(ALI_VPC_SERVICE, functionname, 'python2.7', INVOKE_HANDLER, codeZipFile=zipname)
+            ret = self.client.create_function(ALI_VPC_SERVICE, functionname, runtime, handler, codeZipFile=zipname,codeOSSBucket=codeossbucket, codeOSSObject=codeossobject,memorySize=512)
+            self.logger.info(ret)
             self.servicename = ALI_VPC_SERVICE
         else:
             self.logger.info("create [%s] function\n" % invokeType)
-            ret = self.client.create_function(ALI_NORMAL_SERVICE, functionname, 'python2.7', INVOKE_HANDLER, codeZipFile=zipname)
+            ret = self.client.create_function(ALI_NORMAL_SERVICE, functionname, runtime, handler, codeZipFile=zipname,codeOSSBucket=codeossbucket, codeOSSObject=codeossobject,memorySize=512)
+            self.logger.info(ret)
             self.servicename = ALI_NORMAL_SERVICE
 
         return ret
@@ -78,17 +98,20 @@ class AliClient:
 
 
 if __name__ == '__main__':
-    functionName = "test" + str(int(time.time()))
-    client = AliClient()
-    # client.deleteFunctionAll(ALI_NORMAL_SERVICE)
-    client.logger.info("开始创建函数...")
-    client.createFunction(functionName, BASCI_LOGGING_CODE)
-    client.logger.info("开始调用函数...")
-    resp, duration, mem_usage = client.invokeFunctionGetDuration(functionName)
-    client.logger.info("调用返回：%s" % resp.data)
-    client.logger.info("调用时长：%s" % duration)
-    client.logger.info("运行时内存：%s\n" % mem_usage)
+    # functionName = "test" + str(int(time.time()))
+    # client = AliClient()
+    # # client.deleteFunctionAll(ALI_NORMAL_SERVICE)
+    # client.logger.info("开始创建函数...")
+    # client.createFunction(functionName, BASCI_LOGGING_CODE)
+    # client.logger.info("开始调用函数...")
+    # resp, duration, mem_usage = client.invokeFunctionGetDuration(functionName)
+    # client.logger.info("调用返回：%s" % resp.data)
+    # client.logger.info("调用时长：%s" % duration)
+    # client.logger.info("运行时内存：%s\n" % mem_usage)
+    #
+    # client.logger.info("开始删除函数...")
+    # resp = client.deleteFunction(functionName)
+    # client.logger.info("删除成功！")
 
-    client.logger.info("开始删除函数...")
-    resp = client.deleteFunction(functionName)
-    client.logger.info("删除成功！")
+    file = open(RESULT_DATA_PATH, 'w')
+    file.write("A" * 419430400)

@@ -31,7 +31,7 @@ def handler(event, context):
 def handler(event, context):
     filename = '/tmp/test.txt'  
     file = open(filename, 'w')  
-    file.write("A"*100000)  
+    file.write("A"*419430400)  
     file.close()  
     file = open(filename, 'r')  
     return file.readline() 

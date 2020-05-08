@@ -29,11 +29,11 @@ if __name__ == '__main__':
     ]:
         invoker = Invoker(invokeClient=client, count=NUMBER_OF_INVOKES)
         # 普通函数
-        setResultDataToFile(dataFile, invoker.hotInvoke, isVpc=False, warmUpCount=NUMBER_HOT_WARM_UP_INVOKES)
-        setResultDataToFile(dataFile, invoker.coldInvoke, isVpc=False)
+        setResultDataToFile(dataFile, invoker.hotInvoke, isVpc=False, warmUpCount=NUMBER_HOT_WARM_UP_INVOKES, scenesType=BASCI_LOGGING_CODE)
+        setResultDataToFile(dataFile, invoker.coldInvoke, isVpc=False, scenesType=BASCI_LOGGING_CODE)
         # vpc函数场景
         # VPC函数热启动和普通函数热启动无区别，这里仅收录冷启动数据
-        setResultDataToFile(dataFile, invoker.coldInvoke, isVpc=True)
+        setResultDataToFile(dataFile, invoker.coldInvoke, isVpc=True, scenesType=BASCI_LOGGING_CODE)
 
         # 场景执行测试，区分为计算型、IO内存型、网络型、基础型
         for it in [

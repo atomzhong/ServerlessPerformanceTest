@@ -6,7 +6,7 @@ from tencentcloud.scf.v20180416 import scf_client, models
 from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.profile.http_profile import HttpProfile
 
-from config.config import REGION, QC_API_ID, QC_API_KEY, QC_VPC, QC_SUBNET, QC_ENDPOINT_MODEL, BASCI_LOGGING_CODE, INVOKE_HANDLER, QC_NAME, QC_NAMESPACE
+from config.config import REGION, QC_API_ID, QC_API_KEY, QC_VPC, QC_SUBNET, QC_ENDPOINT_MODEL, BASCI_LOGGING_CODE, INVOKE_HANDLER, QC_NAME, QC_NAMESPACE,QC_COS_BUCKET
 from common.utils import getLogger, getCodeBase64
 
 class QcloudClient:
@@ -49,15 +49,28 @@ class QcloudClient:
 
     def createFunction(self, functionname, invokeType, isVpc=False):
 
-        zip64 = getCodeBase64(invokeType)
+        if invokeType == LARGE_FILE_CODE:
+            code = '{"CosBucketName": "%s", "CosObjectName": "/%s.zip"}'%(QC_COS_BUCKET, invokeType)
+            handler = "index.main"
+            runtime = 'Golang1'
+        elif invokeType == MUTI_LITTLE_FILE_CODE:
+            code = '{"CosBucketName": "%s", "CosObjectName": "/%s.zip"}'%(QC_COS_BUCKET, invokeType)
+            handler = "index.main_handler"
+            runtime = 'Nodejs8.9'
+        else:
+            zip64 = getCodeBase64(invokeType)
+            code = '{"ZipFile": "%s"}' % zip64
+            handler = INVOKE_HANDLER
+            runtime = 'Python2.7'
+
 
         if isVpc:
             self.logger.info("create vpc [%s] function\n" % invokeType)
-            params = '''{"FunctionName":"%s","Code":{"ZipFile":"%s"},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","VpcConfig":{"VpcId":"%s","SubnetId":"%s"},"Namespace":"%s"}''' % (
-            functionname, zip64, INVOKE_HANDLER,QC_VPC,QC_SUBNET, QC_NAMESPACE)
+            params = '''{"FunctionName":"%s","Code":%s,"Timeout":60,"MemorySize":512, "Handler":"%s","Runtime":"%s","VpcConfig":{"VpcId":"%s","SubnetId":"%s"},"Namespace":"%s"}''' % (
+            functionname, str(code), handler,QC_VPC,QC_SUBNET, runtime, QC_NAMESPACE)
         else:
             self.logger.info("create [%s] function\n" % invokeType)
-            params = '''{"FunctionName":"%s","Code":{"ZipFile":"%s"},"Timeout":60,"Handler":"%s","Runtime":"Python2.7","Namespace":"%s"}''' % (functionname, zip64, INVOKE_HANDLER, QC_NAMESPACE)
+            params = '''{"FunctionName":"%s","Code":%s,"Timeout":60,"MemorySize":512,"Handler":"%s","Runtime":"%s","Namespace":"%s"}''' % (functionname, str(code), handler, runtime,QC_NAMESPACE)
 
         crea = models.CreateFunctionRequest()
         crea.from_json_string(params)
