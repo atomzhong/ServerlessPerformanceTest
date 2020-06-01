@@ -2,6 +2,7 @@
 
 Serverless performance testing framework.
 
+任意带外网机器执行以下命令安装依赖库：
 pip install tencentcloud-sdk-python
 
 pip install boto3
@@ -12,11 +13,14 @@ export PYTHONPATH=/your_dir
 
 cd ServerlessPerFormanceTest
 
-mkdir code_zip # 用于保存创建函数时生成的代码zip包
+配置文件中需要填写所有以\*号隐去的字段
 
-mkdir log # 执行日志存放目录
+目录说明：
+code_zip # 用于保存创建函数时生成的代码zip包
 
-mkdir result # 执行结果数据文件存放目录
+log # 执行日志存放目录
+
+result # 执行结果数据文件存放目录
 
 运行方式：
 python main.py
