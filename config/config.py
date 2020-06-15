@@ -23,6 +23,10 @@ REGION = "hongkong"
 AWS_REGION = "ap-east-1" # 香港
 
 # 函数场景
+# 以下函数场景中，大文件场景和批量小文件场景由于代码包过大，会超出api接口的调用限制
+# 所以额外加入了腾讯云cos，阿里云oss以及aws s3的创建方式，需要您自行将代码包先一步上传至同地域的存储桶
+# 再指定存储桶信息进行函数创建
+
 # 基础logging场景
 BASCI_LOGGING_CODE = "BASCI_LOGGING_CODE"
 # 基础循环print场景
@@ -66,6 +70,7 @@ QC_API_ID = "**************"
 QC_API_KEY = "*************"
 
 # 腾讯云 vpc信息，需要和地域信息对应
+# 如果不创建 vpc函数，此项可以不填
 QC_VPC = "vpc-*******"
 QC_SUBNET = "subnet-*******"
 
@@ -76,6 +81,8 @@ QC_ENDPOINT_MODEL = "scf.ap-%s.tencentcloudapi.com"
 # 腾讯云函数命名空间，默认default
 QC_NAMESPACE = "default"
 
+# 如果不需要使用到腾讯cos创建函数，此项可以不填
+# cos地域需要和上列地域配置项处于同一地域
 QC_COS_BUCKET = "********"
 
 # ======================================================
@@ -93,9 +100,11 @@ ALI_ACCESSKEY_ID = "**************"
 ALI_ACCESSKEY_KEY = "****************"
 
 # 阿里云Service信息
+# 如果不创建vpc函数，以下vpc_service配置可以不填
 ALI_VPC_SERVICE = "*****"
 ALI_NORMAL_SERVICE = "*****"
 
+# 如果不需要从aliyun oss创建函数，以下配置项可以不填
 ALI_OSS_BUCKET = ""
 
 # ======================================================
@@ -110,8 +119,10 @@ AWS_ACCESSKEY_KEY = "*****************"
 # 亚马逊云产品角色
 AWS_LAMBDA_ROLE = "*****************"
 
+# 如果不需要创建vpc函数，以下配置项可以不填
 AWS_VPC_CONF = {'SubnetIds': ["subnet-*****","subnet-*****"],'SecurityGroupIds':["sg-*****"]}
 
+# 如果不需要从aws s3创建函数，以下配置项可以不填
 AWS_S3_BUCKET = "*********"
 
 
