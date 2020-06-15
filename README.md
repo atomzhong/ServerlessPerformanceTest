@@ -14,6 +14,9 @@ export PYTHONPATH=/your_dir
 
 cd ServerlessPerFormanceTest
 
+需要添加python环境变量
+export PYTHONPATH=/root/ServerlessPerformanceTest/
+
 配置文件中需要填写所有以\*号隐去的字段
 
 目录说明：
